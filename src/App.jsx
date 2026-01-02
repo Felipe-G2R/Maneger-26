@@ -1,6 +1,7 @@
 import { Routes, Route } from 'react-router-dom'
 import { Header, Sidebar, BottomNav, MobileHeader, InstallPrompt } from './components/common'
 import { Home } from './pages/Home'
+import { Mural } from './pages/Mural'
 import { Goals } from './pages/Goals'
 import { Evolution } from './pages/Evolution'
 import { Diary } from './pages/Diary'
@@ -52,6 +53,7 @@ function AppLayout() {
           <main className="flex-1 p-4 overflow-x-hidden">
             <Routes>
               <Route path="/" element={<Home />} />
+              <Route path="/mural" element={<Mural />} />
               <Route path="/metas" element={<Goals />} />
               <Route path="/evolucao" element={<Evolution />} />
               <Route path="/diario" element={<Diary />} />
@@ -74,6 +76,7 @@ function AppLayout() {
             <main className="flex-1 p-6 overflow-x-hidden">
               <Routes>
                 <Route path="/" element={<Home />} />
+                <Route path="/mural" element={<Mural />} />
                 <Route path="/metas" element={<Goals />} />
                 <Route path="/evolucao" element={<Evolution />} />
                 <Route path="/diario" element={<Diary />} />

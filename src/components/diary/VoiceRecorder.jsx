@@ -20,6 +20,7 @@ export function VoiceRecorder({ onSave }) {
     if (transcription || audioURL) {
       onSave?.({
         audioURL,
+        audioBlob,
         transcription
       })
       clearRecording()

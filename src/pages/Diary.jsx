@@ -30,10 +30,27 @@ export function Diary() {
     setShowMoodModal(true)
   }
 
-  const handleCompleteSave = () => {
+  const handleCompleteSave = async () => {
     if (pendingEntry) {
+      let audioUrl = pendingEntry.audioURL
+
+      // Se tiver blob, fazer upload
+      if (pendingEntry.audioBlob) {
+        try {
+          const { data: { user } } = await import('../lib/supabase').then(m => m.supabase.auth.getUser())
+          if (user) {
+            const { uploadAudio } = await import('../lib/supabase')
+            const result = await uploadAudio(user.id, pendingEntry.audioBlob)
+            audioUrl = result.url
+          }
+        } catch (error) {
+          console.error('Erro no upload:', error)
+          // Fallback para URL local se falhar (vai funcionar so nessa sessao)
+        }
+      }
+
       addEntry({
-        audio_url: pendingEntry.audioURL,
+        audio_url: audioUrl,
         transcription: pendingEntry.transcription,
         mood: selectedMood
       })
@@ -120,11 +137,10 @@ export function Diary() {
               <button
                 key={mood.value}
                 onClick={() => setSelectedMood(mood.value)}
-                className={`flex flex-col items-center gap-2 p-4 rounded-xl transition-all ${
-                  selectedMood === mood.value
+                className={`flex flex-col items-center gap-2 p-4 rounded-xl transition-all ${selectedMood === mood.value
                     ? 'bg-primary-100 dark:bg-primary-900/30 ring-2 ring-primary-500'
                     : 'bg-slate-100 dark:bg-dark-border hover:bg-slate-200 dark:hover:bg-slate-600'
-                }`}
+                  }`}
               >
                 <span className="text-4xl">{mood.emoji}</span>
                 <span className="text-xs font-medium">{mood.label}</span>

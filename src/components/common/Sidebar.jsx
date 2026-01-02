@@ -12,13 +12,15 @@ import {
   DollarSign,
   Users,
   Camera,
-  Apple
+  Apple,
+  Image as ImageIcon
 } from 'lucide-react'
 import { useAppStore } from '../../store/useAppStore'
 import { useGoals } from '../../hooks/useGoals'
 
 const navItems = [
   { path: '/', icon: LayoutDashboard, label: 'Dashboard' },
+  { path: '/mural', icon: ImageIcon, label: 'Mural dos Sonhos' },
   { path: '/metas', icon: Target, label: 'Metas' },
   { path: '/evolucao', icon: Camera, label: 'Mural de Evolucao' },
   { path: '/diario', icon: BookOpen, label: 'Diario' },
@@ -53,9 +55,8 @@ export function Sidebar() {
 
       {/* Sidebar */}
       <aside
-        className={`fixed left-0 top-0 z-50 h-full w-72 bg-white dark:bg-dark-card border-r border-slate-200 dark:border-dark-border transform transition-transform duration-300 lg:translate-x-0 lg:static lg:z-auto ${
-          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        }`}
+        className={`fixed left-0 top-0 z-50 h-full w-72 bg-white dark:bg-dark-card border-r border-slate-200 dark:border-dark-border transform transition-transform duration-300 lg:translate-x-0 lg:static lg:z-auto ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+          }`}
       >
         <div className="flex flex-col h-full">
           {/* Header */}
