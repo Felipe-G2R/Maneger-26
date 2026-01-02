@@ -1,0 +1,24 @@
+# Dependencies
+node_modules
+
+# Dev files
+dev-dist
+*.md
+!README.md
+
+# Git
+.git
+.gitignore
+
+# IDE
+.vscode
+.idea
+
+# Env files (Vercel uses its own env vars)
+.env
+.env.local
+.env.*.local
+
+# SQL files (not needed in production)
+supabase/*.sql
+supabase-schema.sql
