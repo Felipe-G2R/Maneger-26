@@ -55,12 +55,12 @@ export function NotificationCenter() {
         <>
           {/* Overlay */}
           <div
-            className="fixed inset-0 z-40"
+            className="fixed inset-0 z-40 bg-black/20 lg:bg-transparent"
             onClick={() => setShowPanel(false)}
           />
 
-          {/* Panel */}
-          <div className="absolute right-0 top-full mt-2 w-80 sm:w-96 max-h-[70vh] overflow-y-auto bg-white dark:bg-dark-card rounded-2xl shadow-2xl border border-slate-200 dark:border-dark-border z-50">
+          {/* Panel - Full width on mobile, positioned on desktop */}
+          <div className="fixed inset-x-2 top-16 lg:absolute lg:inset-auto lg:right-0 lg:top-full lg:mt-2 lg:w-96 max-h-[70vh] overflow-y-auto bg-white dark:bg-dark-card rounded-2xl shadow-2xl border border-slate-200 dark:border-dark-border z-50">
             {/* Header */}
             <div className="sticky top-0 flex items-center justify-between p-4 border-b border-slate-200 dark:border-dark-border bg-white dark:bg-dark-card">
               <h3 className="font-bold">Notificacoes</h3>

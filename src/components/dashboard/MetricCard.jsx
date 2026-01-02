@@ -31,24 +31,24 @@ export function MetricCard({
       />
 
       <div className="relative">
-        <div className="flex items-start justify-between mb-4">
+        <div className="flex items-start justify-between mb-2 lg:mb-4">
           <div
-            className="w-12 h-12 rounded-xl flex items-center justify-center"
+            className="w-10 h-10 lg:w-12 lg:h-12 rounded-xl flex items-center justify-center"
             style={{ backgroundColor: color + '20' }}
           >
-            <Icon className="w-6 h-6" style={{ color }} />
+            <Icon className="w-5 h-5 lg:w-6 lg:h-6" style={{ color }} />
           </div>
 
           {trend && (
-            <div className={`flex items-center gap-1 text-sm font-medium ${getTrendColor()}`}>
+            <div className={`flex items-center gap-1 text-xs lg:text-sm font-medium ${getTrendColor()}`}>
               {getTrendIcon()}
               <span>{trendValue}</span>
             </div>
           )}
         </div>
 
-        <div className="text-3xl font-bold mb-1">{value}</div>
-        <div className="text-sm text-slate-500 dark:text-dark-muted">{title}</div>
+        <div className="text-2xl lg:text-3xl font-bold mb-1">{value}</div>
+        <div className="text-xs lg:text-sm text-slate-500 dark:text-dark-muted">{title}</div>
         {subtitle && (
           <div className="text-xs text-slate-400 dark:text-slate-500 mt-1">
             {subtitle}

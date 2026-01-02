@@ -72,19 +72,19 @@ export function Diary() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl lg:text-3xl font-bold">Diario por Voz</h1>
-        <p className="text-slate-500 dark:text-dark-muted mt-1">
+        <h1 className="text-xl lg:text-3xl font-bold">Diario por Voz</h1>
+        <p className="text-sm lg:text-base text-slate-500 dark:text-dark-muted mt-1">
           Registre suas reflexoes diarias e acompanhe sua jornada
         </p>
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+      <div className="grid grid-cols-5 gap-2 lg:gap-4">
         {moods.map(mood => (
-          <Card key={mood.value} className="text-center py-4">
-            <div className="text-3xl mb-2">{mood.emoji}</div>
-            <div className="text-2xl font-bold">{moodStats[mood.value] || 0}</div>
-            <div className="text-xs text-slate-500 dark:text-dark-muted">{mood.label}</div>
+          <Card key={mood.value} className="text-center py-2 lg:py-4 px-1 lg:px-4">
+            <div className="text-xl lg:text-3xl mb-1 lg:mb-2">{mood.emoji}</div>
+            <div className="text-lg lg:text-2xl font-bold">{moodStats[mood.value] || 0}</div>
+            <div className="text-[10px] lg:text-xs text-slate-500 dark:text-dark-muted">{mood.label}</div>
           </Card>
         ))}
       </div>

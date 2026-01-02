@@ -36,7 +36,7 @@ export function Modal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 lg:p-4">
       {/* Overlay */}
       <div
         className="absolute inset-0 bg-black/60 backdrop-blur-sm"
@@ -48,8 +48,8 @@ export function Modal({
         className={`relative w-full ${sizeClasses[size]} bg-white dark:bg-dark-card rounded-2xl shadow-2xl transform transition-all duration-300 animate-in fade-in zoom-in-95`}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-slate-200 dark:border-dark-border">
-          <h2 className="text-xl font-bold">{title}</h2>
+        <div className="flex items-center justify-between p-4 lg:p-6 border-b border-slate-200 dark:border-dark-border">
+          <h2 className="text-lg lg:text-xl font-bold">{title}</h2>
           <button
             onClick={onClose}
             className="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-dark-border transition-colors"
@@ -59,7 +59,7 @@ export function Modal({
         </div>
 
         {/* Content */}
-        <div className="p-6 max-h-[70vh] overflow-y-auto">
+        <div className="p-4 lg:p-6 max-h-[70vh] overflow-y-auto">
           {children}
         </div>
       </div>
