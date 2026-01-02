@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react'
 import { BookOpen, Calendar, Smile, Loader2 } from 'lucide-react'
-import { VoiceRecorder, DiaryEntry } from '../components/diary'
+import { DiaryForm, DiaryEntry } from '../components/diary'
 import { Card, Modal } from '../components/common'
 import { useDiaryStore } from '../store/useDiaryStore'
-import { getMoodEmoji } from '../lib/utils'
 
 const moods = [
   { value: 'otimo', label: 'Otimo', emoji: '😄' },
@@ -19,38 +18,21 @@ export function Diary() {
   useEffect(() => {
     fetchEntries()
   }, [fetchEntries])
+
   const [showMoodModal, setShowMoodModal] = useState(false)
   const [pendingEntry, setPendingEntry] = useState(null)
   const [selectedMood, setSelectedMood] = useState('neutro')
 
   const moodStats = getMoodStats()
 
-  const handleSaveRecording = (data) => {
+  const handleSaveEntry = (data) => {
     setPendingEntry(data)
     setShowMoodModal(true)
   }
 
-  const handleCompleteSave = async () => {
+  const handleCompleteSave = () => {
     if (pendingEntry) {
-      let audioUrl = pendingEntry.audioURL
-
-      // Se tiver blob, fazer upload
-      if (pendingEntry.audioBlob) {
-        try {
-          const { data: { user } } = await import('../lib/supabase').then(m => m.supabase.auth.getUser())
-          if (user) {
-            const { uploadAudio } = await import('../lib/supabase')
-            const result = await uploadAudio(user.id, pendingEntry.audioBlob)
-            audioUrl = result.url
-          }
-        } catch (error) {
-          console.error('Erro no upload:', error)
-          // Fallback para URL local se falhar (vai funcionar so nessa sessao)
-        }
-      }
-
       addEntry({
-        audio_url: audioUrl,
         transcription: pendingEntry.transcription,
         mood: selectedMood
       })
@@ -72,7 +54,7 @@ export function Diary() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-xl lg:text-3xl font-bold">Diario por Voz</h1>
+        <h1 className="text-xl lg:text-3xl font-bold">Diario</h1>
         <p className="text-sm lg:text-base text-slate-500 dark:text-dark-muted mt-1">
           Registre suas reflexoes diarias e acompanhe sua jornada
         </p>
@@ -89,18 +71,18 @@ export function Diary() {
         ))}
       </div>
 
-      {/* Recorder */}
-      <VoiceRecorder onSave={handleSaveRecording} />
+      {/* New Entry Form */}
+      <DiaryForm onSave={handleSaveEntry} />
 
       {/* Entries List */}
       <div>
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-bold flex items-center gap-2">
+          <h2 className="text-base lg:text-lg font-bold flex items-center gap-2">
             <BookOpen className="w-5 h-5 text-primary-500" />
             Entradas do Diario
           </h2>
-          <span className="text-sm text-slate-500 dark:text-dark-muted">
-            {entries.length} entradas
+          <span className="text-xs lg:text-sm text-slate-500 dark:text-dark-muted">
+            {entries.length} {entries.length === 1 ? 'entrada' : 'entradas'}
           </span>
         </div>
 
@@ -111,11 +93,11 @@ export function Diary() {
             ))}
           </div>
         ) : (
-          <Card className="text-center py-12">
-            <Calendar className="w-12 h-12 mx-auto mb-4 text-slate-300 dark:text-slate-600" />
-            <h3 className="text-lg font-medium mb-2">Nenhuma entrada ainda</h3>
-            <p className="text-slate-500 dark:text-dark-muted">
-              Grave sua primeira reflexao diaria usando o gravador acima!
+          <Card className="text-center py-8 lg:py-12">
+            <Calendar className="w-10 h-10 lg:w-12 lg:h-12 mx-auto mb-4 text-slate-300 dark:text-slate-600" />
+            <h3 className="text-base lg:text-lg font-medium mb-2">Nenhuma entrada ainda</h3>
+            <p className="text-sm text-slate-500 dark:text-dark-muted">
+              Clique em "Nova Anotacao" para registrar sua primeira reflexao!
             </p>
           </Card>
         )}
@@ -127,23 +109,24 @@ export function Diary() {
         onClose={() => setShowMoodModal(false)}
         title="Como voce esta se sentindo?"
       >
-        <div className="space-y-6">
-          <p className="text-slate-500 dark:text-dark-muted">
+        <div className="space-y-4 lg:space-y-6">
+          <p className="text-sm text-slate-500 dark:text-dark-muted">
             Selecione o humor que melhor representa como voce esta hoje:
           </p>
 
-          <div className="grid grid-cols-5 gap-3">
+          <div className="grid grid-cols-5 gap-2 lg:gap-3">
             {moods.map(mood => (
               <button
                 key={mood.value}
                 onClick={() => setSelectedMood(mood.value)}
-                className={`flex flex-col items-center gap-2 p-4 rounded-xl transition-all ${selectedMood === mood.value
+                className={`flex flex-col items-center gap-1 lg:gap-2 p-2 lg:p-4 rounded-xl transition-all ${
+                  selectedMood === mood.value
                     ? 'bg-primary-100 dark:bg-primary-900/30 ring-2 ring-primary-500'
                     : 'bg-slate-100 dark:bg-dark-border hover:bg-slate-200 dark:hover:bg-slate-600'
-                  }`}
+                }`}
               >
-                <span className="text-4xl">{mood.emoji}</span>
-                <span className="text-xs font-medium">{mood.label}</span>
+                <span className="text-2xl lg:text-4xl">{mood.emoji}</span>
+                <span className="text-[10px] lg:text-xs font-medium">{mood.label}</span>
               </button>
             ))}
           </div>
@@ -157,10 +140,10 @@ export function Diary() {
             </button>
             <button
               onClick={handleCompleteSave}
-              className="btn btn-primary flex-1"
+              className="btn btn-primary flex-1 flex items-center justify-center gap-2"
             >
-              <Smile className="w-5 h-5" />
-              Salvar Entrada
+              <Smile className="w-4 h-4 lg:w-5 lg:h-5" />
+              Salvar
             </button>
           </div>
         </div>

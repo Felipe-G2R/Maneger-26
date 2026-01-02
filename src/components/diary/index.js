@@ -1,2 +1,2 @@
-export { VoiceRecorder } from './VoiceRecorder'
+export { DiaryForm } from './DiaryForm'
 export { DiaryEntry } from './DiaryEntry'
