@@ -91,6 +91,14 @@ export const useGoalStore = create(
 
           if (error) throw error
 
+          // Se não tem metas, carregar automaticamente as metas do Projeto 2026
+          if (!data || data.length === 0) {
+            console.log('Nenhuma meta encontrada. Carregando metas do Projeto 2026...')
+            set({ loading: false })
+            await get().seedProject2026Goals()
+            return
+          }
+
           // Mesclar metas do Supabase com as locais (prioridade para Supabase)
           const localGoals = get().goals.filter(g => !g.user_id)
           const mergedGoals = [...(data || []), ...localGoals]
