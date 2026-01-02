@@ -5,14 +5,13 @@ export function useVoiceRecorder() {
   const [audioURL, setAudioURL] = useState(null)
   const [audioBlob, setAudioBlob] = useState(null)
   const [transcription, setTranscription] = useState('')
-  const [isTranscribing, setIsTranscribing] = useState(false)
   const [error, setError] = useState(null)
   const [duration, setDuration] = useState(0)
 
   const mediaRecorderRef = useRef(null)
   const audioChunksRef = useRef([])
-  const recognitionRef = useRef(null)
   const timerRef = useRef(null)
+  const streamRef = useRef(null)
 
   // Iniciar gravação
   const startRecording = useCallback(async () => {
@@ -22,12 +21,23 @@ export function useVoiceRecorder() {
 
       // Solicitar permissão do microfone
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+      streamRef.current = stream
+
+      // Verificar mimeType suportado
+      let mimeType = 'audio/webm;codecs=opus'
+      if (!MediaRecorder.isTypeSupported(mimeType)) {
+        mimeType = 'audio/webm'
+        if (!MediaRecorder.isTypeSupported(mimeType)) {
+          mimeType = 'audio/mp4'
+          if (!MediaRecorder.isTypeSupported(mimeType)) {
+            mimeType = '' // Usar padrão do navegador
+          }
+        }
+      }
 
       // Criar MediaRecorder
-      const mediaRecorder = new MediaRecorder(stream, {
-        mimeType: 'audio/webm;codecs=opus'
-      })
-
+      const options = mimeType ? { mimeType } : {}
+      const mediaRecorder = new MediaRecorder(stream, options)
       mediaRecorderRef.current = mediaRecorder
 
       mediaRecorder.ondataavailable = (event) => {
@@ -37,17 +47,21 @@ export function useVoiceRecorder() {
       }
 
       mediaRecorder.onstop = () => {
-        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' })
-        const audioUrl = URL.createObjectURL(audioBlob)
-        setAudioBlob(audioBlob)
-        setAudioURL(audioUrl)
+        const blob = new Blob(audioChunksRef.current, {
+          type: mimeType || 'audio/webm'
+        })
+        const url = URL.createObjectURL(blob)
+        setAudioBlob(blob)
+        setAudioURL(url)
 
         // Parar todas as tracks
-        stream.getTracks().forEach(track => track.stop())
+        if (streamRef.current) {
+          streamRef.current.getTracks().forEach(track => track.stop())
+        }
       }
 
       // Iniciar gravação
-      mediaRecorder.start(100) // Capturar dados a cada 100ms
+      mediaRecorder.start(100)
       setIsRecording(true)
       setDuration(0)
 
@@ -56,64 +70,15 @@ export function useVoiceRecorder() {
         setDuration(prev => prev + 1)
       }, 1000)
 
-      // Iniciar reconhecimento de voz (Web Speech API)
-      try {
-        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-          const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
-          const recognition = new SpeechRecognition()
-
-          recognition.lang = 'pt-BR'
-          recognition.continuous = true
-          recognition.interimResults = true
-
-          recognition.onresult = (event) => {
-            let finalTranscript = ''
-
-            for (let i = event.resultIndex; i < event.results.length; i++) {
-              const transcript = event.results[i][0].transcript
-              if (event.results[i].isFinal) {
-                finalTranscript += transcript + ' '
-              }
-            }
-
-            if (finalTranscript) {
-              setTranscription(prev => prev + finalTranscript)
-            }
-          }
-
-          recognition.onerror = (event) => {
-            console.error('Speech recognition error:', event.error)
-            // Ignorar erros comuns que nao afetam a gravacao
-            if (event.error !== 'no-speech' && event.error !== 'aborted') {
-              console.warn('Transcricao automatica indisponivel:', event.error)
-            }
-            setIsTranscribing(false)
-          }
-
-          recognition.onend = () => {
-            // Reiniciar se ainda estiver gravando
-            if (mediaRecorderRef.current?.state === 'recording') {
-              try {
-                recognition.start()
-              } catch (e) {
-                console.warn('Nao foi possivel reiniciar transcricao')
-              }
-            }
-          }
-
-          recognitionRef.current = recognition
-          recognition.start()
-          setIsTranscribing(true)
-        } else {
-          console.warn('Web Speech API nao suportada neste navegador')
-        }
-      } catch (speechError) {
-        console.warn('Transcricao nao disponivel:', speechError)
-      }
-
     } catch (err) {
-      setError('Erro ao acessar o microfone: ' + err.message)
       console.error('Error starting recording:', err)
+      if (err.name === 'NotAllowedError') {
+        setError('Permissao de microfone negada. Por favor, permita o acesso ao microfone.')
+      } else if (err.name === 'NotFoundError') {
+        setError('Nenhum microfone encontrado. Conecte um microfone e tente novamente.')
+      } else {
+        setError('Erro ao acessar o microfone: ' + err.message)
+      }
     }
   }, [])
 
@@ -126,11 +91,6 @@ export function useVoiceRecorder() {
       if (timerRef.current) {
         clearInterval(timerRef.current)
         timerRef.current = null
-      }
-
-      if (recognitionRef.current) {
-        recognitionRef.current.stop()
-        setIsTranscribing(false)
       }
     }
   }, [isRecording])
@@ -159,7 +119,6 @@ export function useVoiceRecorder() {
     audioURL,
     audioBlob,
     transcription,
-    isTranscribing,
     error,
     duration,
     formattedDuration: formatDuration(duration),
