@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#6366F1" />
+    <meta name="background-color" content="#0F172A" />
+    <meta name="description" content="Maneger 26 - PWA de Gestao de Metas 2026 com diario por voz e mural de evolucao" />
+
+    <!-- iOS Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Maneger 26" />
+
+    <!-- Android Meta Tags -->
+    <meta name="mobile-web-app-capable" content="yes" />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/icons/icon-192x192.svg" />
+
+    <!-- Splash Screens iOS -->
+    <link rel="apple-touch-startup-image" href="/icons/icon-512x512.svg" />
+
+    <!-- Preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <title>Maneger 26 - Gestao de Metas 2026</title>
+
+    <!-- Prevent flash of unstyled content -->
+    <script>
+      (function() {
+        const stored = localStorage.getItem('maneger-26-app');
+        if (stored) {
+          try {
+            const { state } = JSON.parse(stored);
+            if (state?.theme === 'dark') {
+              document.documentElement.classList.add('dark');
+            }
+          } catch (e) {}
+        } else {
+          document.documentElement.classList.add('dark');
+        }
+      })();
+    </script>
+
+    <style>
+      /* Critical CSS for loading */
+      html, body {
+        margin: 0;
+        padding: 0;
+        background-color: #0F172A;
+      }
+      html.dark body {
+        background-color: #0F172A;
+      }
+      html:not(.dark) body {
+        background-color: #F8FAFC;
+      }
+
+      /* Safe areas for notch devices */
+      :root {
+        --sat: env(safe-area-inset-top);
+        --sar: env(safe-area-inset-right);
+        --sab: env(safe-area-inset-bottom);
+        --sal: env(safe-area-inset-left);
+      }
+
+      .pb-safe {
+        padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
+      }
+
+      .pt-safe {
+        padding-top: env(safe-area-inset-top);
+      }
+
+      /* Loading spinner */
+      #loading {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #0F172A;
+        z-index: 9999;
+        transition: opacity 0.3s;
+      }
+      html:not(.dark) #loading {
+        background: #F8FAFC;
+      }
+      #loading.hidden {
+        opacity: 0;
+        pointer-events: none;
+      }
+      .spinner {
+        width: 48px;
+        height: 48px;
+        border: 4px solid rgba(99, 102, 241, 0.2);
+        border-top-color: #6366F1;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+    </style>
+  </head>
+  <body class="antialiased overscroll-none">
+    <!-- Loading spinner -->
+    <div id="loading">
+      <div class="spinner"></div>
+    </div>
+
+    <div id="root"></div>
+
+    <script type="module" src="/src/main.jsx"></script>
+
+    <!-- Hide loading after app mounts -->
+    <script>
+      window.addEventListener('load', function() {
+        setTimeout(function() {
+          document.getElementById('loading').classList.add('hidden');
+        }, 300);
+      });
+    </script>
+  </body>
+</html>
