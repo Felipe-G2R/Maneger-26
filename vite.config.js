@@ -11,7 +11,7 @@ export default defineConfig({
       manifest: {
         name: 'Maneger 26 - Gestao de Metas',
         short_name: 'Maneger 26',
-        description: 'PWA de Gestao de Metas 2026 com diario por voz e mural de evolucao',
+        description: 'PWA de Gestao de Metas 2026 com diario e mural de evolucao',
         theme_color: '#6366F1',
         background_color: '#0F172A',
         display: 'standalone',
