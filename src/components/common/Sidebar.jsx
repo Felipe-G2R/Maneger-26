@@ -12,15 +12,13 @@ import {
   DollarSign,
   Users,
   Camera,
-  Apple,
-  Image as ImageIcon
+  Apple
 } from 'lucide-react'
 import { useAppStore } from '../../store/useAppStore'
 import { useGoals } from '../../hooks/useGoals'
 
 const navItems = [
   { path: '/', icon: LayoutDashboard, label: 'Dashboard' },
-  { path: '/mural', icon: ImageIcon, label: 'Mural dos Sonhos' },
   { path: '/metas', icon: Target, label: 'Metas' },
   { path: '/evolucao', icon: Camera, label: 'Mural de Evolucao' },
   { path: '/diario', icon: BookOpen, label: 'Diario' },
