@@ -8,7 +8,11 @@ import {
   Download,
   Upload,
   Trash2,
-  Info
+  Info,
+  Target,
+  CheckCircle,
+  AlertCircle,
+  Loader2
 } from 'lucide-react'
 import { Card } from '../components/common'
 import { useAppStore } from '../store/useAppStore'
@@ -19,10 +23,11 @@ import { useTheme } from '../hooks/useTheme'
 export function Settings() {
   const { theme, toggleTheme, isDark } = useTheme()
   const { preferences, updatePreferences } = useAppStore()
-  const { goals, resetToInitial } = useGoalStore()
+  const { goals, clearState, seedProject2026Goals, loading } = useGoalStore()
   const { entries } = useDiaryStore()
 
   const [showResetConfirm, setShowResetConfirm] = useState(false)
+  const [seedResult, setSeedResult] = useState(null)
 
   const handleExportData = () => {
     const data = {
@@ -44,9 +49,18 @@ export function Settings() {
   const handleReset = () => {
     localStorage.removeItem('maneger-26-goals')
     localStorage.removeItem('maneger-26-diary')
-    resetToInitial()
+    clearState()
     setShowResetConfirm(false)
     window.location.reload()
+  }
+
+  const handleSeedGoals = async () => {
+    setSeedResult(null)
+    const result = await seedProject2026Goals()
+    setSeedResult(result)
+
+    // Limpar mensagem após 5 segundos
+    setTimeout(() => setSeedResult(null), 5000)
   }
 
   return (
@@ -126,6 +140,56 @@ export function Settings() {
               <div className="w-11 h-6 bg-slate-300 dark:bg-dark-border peer-focus:ring-4 peer-focus:ring-primary-500/25 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-500"></div>
             </label>
           </div>
+        </div>
+      </Card>
+
+      {/* Projeto 2026 */}
+      <Card>
+        <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
+          <Target className="w-5 h-5 text-primary-500" />
+          Projeto 2026
+        </h3>
+
+        <div className="space-y-4">
+          <div className="p-4 rounded-xl bg-gradient-to-r from-primary-500/10 to-purple-500/10 border border-primary-500/20">
+            <p className="text-sm mb-3">
+              Carregue suas metas pessoais do Projeto 2026 incluindo objetivos físicos,
+              intelectuais, almáticos, financeiros e sociais.
+            </p>
+            <p className="text-xs text-slate-500 dark:text-dark-muted">
+              19 metas definidas: Emagrecer 10kg, Projeto 2k Day, Inglês A2, Faturar R$250k, e mais...
+            </p>
+          </div>
+
+          <button
+            onClick={handleSeedGoals}
+            disabled={loading}
+            className="w-full flex items-center justify-center gap-2 p-4 rounded-xl bg-primary-500 text-white hover:bg-primary-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {loading ? (
+              <Loader2 className="w-5 h-5 animate-spin" />
+            ) : (
+              <Target className="w-5 h-5" />
+            )}
+            <span className="font-medium">
+              {loading ? 'Carregando...' : 'Carregar Metas do Projeto 2026'}
+            </span>
+          </button>
+
+          {seedResult && (
+            <div className={`flex items-center gap-2 p-3 rounded-xl ${
+              seedResult.success
+                ? 'bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400'
+                : 'bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400'
+            }`}>
+              {seedResult.success ? (
+                <CheckCircle className="w-5 h-5" />
+              ) : (
+                <AlertCircle className="w-5 h-5" />
+              )}
+              <span className="text-sm">{seedResult.message || seedResult.error}</span>
+            </div>
+          )}
         </div>
       </Card>
 

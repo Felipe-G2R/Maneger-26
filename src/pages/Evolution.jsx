@@ -3,7 +3,8 @@ import { Dumbbell, TrendingUp, Camera, Calendar, Loader2 } from 'lucide-react'
 import {
   PhotoComparison,
   WeeklyDiary,
-  EvolutionStats
+  EvolutionStats,
+  WeeklyRoutine
 } from '../components/evolution'
 import { Card } from '../components/common'
 import { useEvolutionStore } from '../store/useEvolutionStore'
@@ -74,6 +75,9 @@ export function Evolution() {
           <div className="text-xs opacity-80">Seu Ano</div>
         </Card>
       </div>
+
+      {/* Rotina Semanal - Projeto 2026 */}
+      <WeeklyRoutine />
 
       {/* Estatisticas de Evolucao */}
       <EvolutionStats />
