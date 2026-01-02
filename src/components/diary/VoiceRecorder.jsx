@@ -6,6 +6,7 @@ export function VoiceRecorder({ onSave }) {
   const {
     isRecording,
     audioURL,
+    audioBlob,
     transcription,
     isTranscribing,
     error,
@@ -88,7 +89,7 @@ export function VoiceRecorder({ onSave }) {
       {!isRecording && !audioURL && (
         <p className="text-center text-sm text-slate-500 dark:text-dark-muted">
           Clique no botao acima para comecar a gravar sua reflexao diaria.
-          O audio sera transcrito automaticamente.
+          A transcricao automatica funciona no Chrome/Edge. Voce pode editar o texto manualmente.
         </p>
       )}
 

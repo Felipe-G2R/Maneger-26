@@ -1,28 +1,12 @@
-import { Play, Pause, Trash2, Calendar, Clock } from 'lucide-react'
-import { useState, useRef } from 'react'
+import { Trash2, Calendar, Clock } from 'lucide-react'
+import { useRef } from 'react'
 import { Card } from '../common'
 import { useDiaryStore } from '../../store/useDiaryStore'
 import { formatDate, getMoodEmoji, getMoodName } from '../../lib/utils'
 
 export function DiaryEntry({ entry }) {
-  const [isPlaying, setIsPlaying] = useState(false)
   const audioRef = useRef(null)
   const { deleteEntry } = useDiaryStore()
-
-  const handlePlayPause = () => {
-    if (audioRef.current) {
-      if (isPlaying) {
-        audioRef.current.pause()
-      } else {
-        audioRef.current.play()
-      }
-      setIsPlaying(!isPlaying)
-    }
-  }
-
-  const handleAudioEnd = () => {
-    setIsPlaying(false)
-  }
 
   const handleDelete = () => {
     if (confirm('Tem certeza que deseja excluir esta entrada?')) {
@@ -65,30 +49,14 @@ export function DiaryEntry({ entry }) {
 
       {/* Audio Player */}
       {entry.audio_url && (
-        <div className="flex items-center gap-4 p-4 rounded-xl bg-slate-50 dark:bg-dark-border/50 mb-4">
-          <button
-            onClick={handlePlayPause}
-            className="w-12 h-12 rounded-full bg-primary-500 flex items-center justify-center text-white hover:bg-primary-600 transition-colors"
-          >
-            {isPlaying ? (
-              <Pause className="w-5 h-5 fill-current" />
-            ) : (
-              <Play className="w-5 h-5 fill-current ml-1" />
-            )}
-          </button>
-
-          <div className="flex-1">
-            <div className="text-sm font-medium">Audio do Diario</div>
-            <div className="text-xs text-slate-500 dark:text-dark-muted">
-              Clique para {isPlaying ? 'pausar' : 'ouvir'}
-            </div>
-          </div>
-
+        <div className="p-4 rounded-xl bg-slate-50 dark:bg-dark-border/50 mb-4">
+          <div className="text-sm font-medium mb-2">Audio do Diario</div>
           <audio
             ref={audioRef}
             src={entry.audio_url}
-            onEnded={handleAudioEnd}
-            className="hidden"
+            controls
+            className="w-full"
+            onError={(e) => console.error('Erro ao carregar audio:', e)}
           />
         </div>
       )}

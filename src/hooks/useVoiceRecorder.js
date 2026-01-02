@@ -57,46 +57,58 @@ export function useVoiceRecorder() {
       }, 1000)
 
       // Iniciar reconhecimento de voz (Web Speech API)
-      if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
-        const recognition = new SpeechRecognition()
+      try {
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+          const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
+          const recognition = new SpeechRecognition()
 
-        recognition.lang = 'pt-BR'
-        recognition.continuous = true
-        recognition.interimResults = true
+          recognition.lang = 'pt-BR'
+          recognition.continuous = true
+          recognition.interimResults = true
 
-        recognition.onresult = (event) => {
-          let finalTranscript = ''
-          let interimTranscript = ''
+          recognition.onresult = (event) => {
+            let finalTranscript = ''
 
-          for (let i = event.resultIndex; i < event.results.length; i++) {
-            const transcript = event.results[i][0].transcript
-            if (event.results[i].isFinal) {
-              finalTranscript += transcript + ' '
-            } else {
-              interimTranscript += transcript
+            for (let i = event.resultIndex; i < event.results.length; i++) {
+              const transcript = event.results[i][0].transcript
+              if (event.results[i].isFinal) {
+                finalTranscript += transcript + ' '
+              }
             }
-          }
 
-          setTranscription(prev => {
-            const newText = finalTranscript || interimTranscript
             if (finalTranscript) {
-              return prev + finalTranscript
+              setTranscription(prev => prev + finalTranscript)
             }
-            return prev
-          })
-        }
-
-        recognition.onerror = (event) => {
-          console.error('Speech recognition error:', event.error)
-          if (event.error !== 'no-speech') {
-            setError('Erro no reconhecimento de voz: ' + event.error)
           }
-        }
 
-        recognitionRef.current = recognition
-        recognition.start()
-        setIsTranscribing(true)
+          recognition.onerror = (event) => {
+            console.error('Speech recognition error:', event.error)
+            // Ignorar erros comuns que nao afetam a gravacao
+            if (event.error !== 'no-speech' && event.error !== 'aborted') {
+              console.warn('Transcricao automatica indisponivel:', event.error)
+            }
+            setIsTranscribing(false)
+          }
+
+          recognition.onend = () => {
+            // Reiniciar se ainda estiver gravando
+            if (mediaRecorderRef.current?.state === 'recording') {
+              try {
+                recognition.start()
+              } catch (e) {
+                console.warn('Nao foi possivel reiniciar transcricao')
+              }
+            }
+          }
+
+          recognitionRef.current = recognition
+          recognition.start()
+          setIsTranscribing(true)
+        } else {
+          console.warn('Web Speech API nao suportada neste navegador')
+        }
+      } catch (speechError) {
+        console.warn('Transcricao nao disponivel:', speechError)
       }
 
     } catch (err) {
